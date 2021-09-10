@@ -1,4 +1,5 @@
 <?php
+
 namespace Dipoengoro\GudangBase\Entity;
 
 class Barang
@@ -7,14 +8,14 @@ class Barang
     private string $namaBarang;
     private int $hargaSatuan;
     private string $satuanBarang;
-    private int $sisaBarang;
+    private float $sisaBarang;
 
     public function __construct(
         string $idBarang = "",
         string $namaBarang = "",
         int $hargaSatuan = 0,
         string $satuanBarang = "pcs",
-        int $sisaBarang = 0
+        float $sisaBarang = 0
     ) {
         $this->idBarang = $idBarang;
         $this->namaBarang = $namaBarang;
@@ -23,11 +24,11 @@ class Barang
         $this->sisaBarang = $sisaBarang;
     }
 
-    
+
 
     /**
      * Get the value of idBarang
-     */ 
+     */
     public function getIdBarang()
     {
         return $this->idBarang;
@@ -37,7 +38,7 @@ class Barang
      * Set the value of idBarang
      *
      * @return  self
-     */ 
+     */
     public function setIdBarang($idBarang)
     {
         $this->idBarang = $idBarang;
@@ -47,7 +48,7 @@ class Barang
 
     /**
      * Get the value of namaBarang
-     */ 
+     */
     public function getNamaBarang()
     {
         return $this->namaBarang;
@@ -57,7 +58,7 @@ class Barang
      * Set the value of namaBarang
      *
      * @return  self
-     */ 
+     */
     public function setNamaBarang($namaBarang)
     {
         $this->namaBarang = $namaBarang;
@@ -67,7 +68,7 @@ class Barang
 
     /**
      * Get the value of satuanBarang
-     */ 
+     */
     public function getSatuanBarang()
     {
         return $this->satuanBarang;
@@ -77,7 +78,7 @@ class Barang
      * Set the value of satuanBarang
      *
      * @return  self
-     */ 
+     */
     public function setSatuanBarang($satuanBarang)
     {
         $this->satuanBarang = $satuanBarang;
@@ -87,7 +88,7 @@ class Barang
 
     /**
      * Get the value of sisaBarang
-     */ 
+     */
     public function getSisaBarang()
     {
         return $this->sisaBarang;
@@ -97,7 +98,7 @@ class Barang
      * Set the value of sisaBarang
      *
      * @return  self
-     */ 
+     */
     public function setSisaBarang($sisaBarang)
     {
         $this->sisaBarang = $sisaBarang;
@@ -107,7 +108,7 @@ class Barang
 
     /**
      * Get the value of hargaSatuan
-     */ 
+     */
     public function getHargaSatuan()
     {
         return $this->hargaSatuan;
@@ -117,7 +118,7 @@ class Barang
      * Set the value of hargaSatuan
      *
      * @return  self
-     */ 
+     */
     public function setHargaSatuan($hargaSatuan)
     {
         $this->hargaSatuan = $hargaSatuan;
