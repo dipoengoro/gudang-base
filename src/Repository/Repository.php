@@ -49,6 +49,7 @@ class BarangRepositoryImpl implements BarangRepository
                 ) 
                 VALUES (?, ?, ?, ?, ?)";
         $statement = $this->connection->prepare($sql);
+
         $statement->execute([
             $barang->getIdBarang(),
             $barang->getNamaBarang(),

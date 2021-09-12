@@ -13,9 +13,9 @@ class Barang
     public function __construct(
         string $idBarang = "",
         string $namaBarang = "",
-        int $hargaSatuan = 0,
+        int $hargaSatuan = 1,
         string $satuanBarang = "pcs",
-        float $sisaBarang = 0
+        float $sisaBarang = 1
     ) {
         $this->idBarang = $idBarang;
         $this->namaBarang = $namaBarang;

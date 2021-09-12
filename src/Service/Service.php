@@ -18,6 +18,7 @@ interface BarangService
     ): void;
     function removeBarang(string $idBarang): void;
     function findBarang(string $idBarang): Barang;
+    function checkBarang(string $idBarang): bool;
     function updateBarang(
         string $idBarang,
         string $idBaru,
@@ -55,37 +56,34 @@ class BarangServiceImpl implements BarangService
         string $satuanBarang,
         float $sisaBarang
     ): void {
+        $validateId = (string) $idBarang;
+        $validateNama = (string) $namaBarang;
+        $validateHarga = (int) $hargaSatuan;
+        $validateSatuan = (string) $satuanBarang;
+        $validateSisa = (float) $sisaBarang;
+
         $barang = new Barang(
-            $idBarang,
-            $namaBarang,
-            $hargaSatuan,
-            $satuanBarang,
-            $sisaBarang
+            $validateId,
+            $validateNama,
+            $validateHarga,
+            $validateSatuan,
+            $validateSisa
         );
         $this->barangRepository->add($barang);
+
         Input::banner("Berhasil menambahkan $namaBarang");
     }
 
     function removeBarang(string $idBarang): void
     {
-        if ($this->barangRepository->check($idBarang)) {
-            $this->barangRepository->remove($idBarang);
-            Input::banner("Sukses menghapus barang dengan Kode Barang: $idBarang");
-        } else {
-            Input::banner("Kode barang tidak ditemukan");
-        }
+        $this->barangRepository->remove($idBarang);
+        Input::banner("Sukses menghapus barang dengan Kode Barang: $idBarang");
     }
 
     function findBarang(string $idBarang): Barang
     {
-        $barang = null;
-        if ($this->barangRepository->check($idBarang)) {
-            $barang = $this->barangRepository->find($idBarang);
-            return $barang;
-        } else {
-            Input::banner("Kode barang tidak ditemukan");
-            return $barang;
-        }
+        $barang = $this->barangRepository->find($idBarang);
+        return $barang;
     }
 
     function updateBarang(
@@ -96,20 +94,21 @@ class BarangServiceImpl implements BarangService
         string $satuanBaru,
         string $sisaBaru
     ): void {
-        if ($this->barangRepository->check($idBarang)) {
-            if ($idBaru != "") {
-                $this->barangRepository->updateId($idBarang, $idBaru);
-                $this->barangRepository->updateNama($idBaru, $namaBaru);
-                $this->barangRepository->updateHarga($idBaru, $hargaBaru);
-                $this->barangRepository->updateSatuan($idBaru, $satuanBaru);
-                $this->barangRepository->updateSisa($idBaru, $sisaBaru);
-            }
-            $this->barangRepository->updateNama($idBarang, $namaBaru);
-            $this->barangRepository->updateHarga($idBarang, $hargaBaru);
-            $this->barangRepository->updateSatuan($idBarang, $satuanBaru);
-            $this->barangRepository->updateSisa($idBarang, $sisaBaru);
-        } else {
-            Input::banner("Kode barang tidak ditemukan");
+        if ($idBaru != "") {
+            $this->barangRepository->updateId($idBarang, $idBaru);
+            $this->barangRepository->updateNama($idBaru, $namaBaru);
+            $this->barangRepository->updateHarga($idBaru, $hargaBaru);
+            $this->barangRepository->updateSatuan($idBaru, $satuanBaru);
+            $this->barangRepository->updateSisa($idBaru, $sisaBaru);
         }
+        $this->barangRepository->updateNama($idBarang, $namaBaru);
+        $this->barangRepository->updateHarga($idBarang, $hargaBaru);
+        $this->barangRepository->updateSatuan($idBarang, $satuanBaru);
+        $this->barangRepository->updateSisa($idBarang, $sisaBaru);
+    }
+
+    function checkBarang(string $idBarang): bool
+    {
+        return $this->barangRepository->check($idBarang);
     }
 }

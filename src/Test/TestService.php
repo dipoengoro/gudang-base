@@ -6,6 +6,7 @@ require_once __DIR__ . "../../Service/Service.php";
 use Dipoengoro\GudangBase\Repository\BarangRepositoryImpl;
 use Dipoengoro\GudangBase\Service\BarangServiceImpl;
 use Dipoengoro\GudangBase\Util\Connect;
+use Dipoengoro\GudangBase\Util\Input;
 
 function testShowBarang(): void
 {
@@ -29,4 +30,22 @@ function testRepository(): PDO
     return $connection;
 }
 
-testShowBarang();
+function testExeption(int $i): void {
+    if($i > 0) {
+        throw new Exception("Eror lebih dari 0", 1);
+    }
+}
+
+function testValidation(string $s) {
+    $input = (int) $s;
+    if ($input == 0) {
+        throw new Exception("Error bukan integer", 1);   
+    }
+}
+
+
+try {
+    testValidation("coba");
+} catch(Exception $e) {
+    Input::banner($e->getMessage());
+}
