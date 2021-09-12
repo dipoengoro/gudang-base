@@ -9,17 +9,19 @@ class Connect
 
     static function getConnection(): PDO
     {
-        $host = "localhost";
+        $host = "dipoengoro.mysql.database.azure.com";
         $port = "3306";
         $database = "gudang";
-        $username = "root";
-        $password = "Koplolo00--";
+        $username = "dipoengoro@dipoengoro";
+        $password = "4wj_qDJ.4k2GZwn";
         $dsn = "mysql:host=$host;port=$port;dbname=$database";
+        // $options = openssl_get_cert_locations();
 
         return new PDO(
             dsn: $dsn,
             username: $username,
-            password: $password
+            password: $password,
+            // options: $options
         );
     }
 }

@@ -132,12 +132,21 @@ class GudangView
             $satuanBaru = Input::inputData("Satuan Barang");
             $sisaBaru = Input::inputData("Sisa barang");
 
-            try {
-                $this->validation->validateHarga($hargaBaru);
-                $this->validation->validateSisa($sisaBaru);
-            } catch (Exception $e) {
-                Input::banner($e->getMessage());
-                $success = false;
+            if ($hargaBaru != "") {
+                try {
+                    $this->validation->validateHarga($hargaBaru);
+                   
+                } catch (Exception $e) {
+                    Input::banner($e->getMessage());
+                    $success = false;
+                }
+            } else if($sisaBaru != "") {
+                try {
+                    $this->validation->validateSisa($sisaBaru);
+                } catch (Exception $e) {
+                    Input::banner($e->getMessage());
+                    $success = false;
+                }
             }
 
             if ($success) {
