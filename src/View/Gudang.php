@@ -26,7 +26,8 @@ class GudangView
             Input::titleBanner("Menu");
             Input::banner("1. Tambah Barang");
             Input::banner("2. Edit Barang");
-            Input::banner("3. Hapus Barang");
+            Input::banner("3. Transaksi");
+            Input::banner("4. Hapus Barang");
             Input::banner("x. Keluar");
 
             $pilihan = Input::inputMenu("Pilih");
@@ -34,7 +35,9 @@ class GudangView
                 $this->addBarang();
             } elseif ($pilihan == "2") {
                 $this->updateBarang();
-            } elseif ($pilihan == "3") {
+            } else if ($pilihan == "3") {
+                $this->transaksi();
+            } elseif ($pilihan == "4") {
                 $this->removeBarang();
             } else if ($pilihan == "x") {
                 break;
@@ -135,12 +138,11 @@ class GudangView
             if ($hargaBaru != "") {
                 try {
                     $this->validation->validateHarga($hargaBaru);
-                   
                 } catch (Exception $e) {
                     Input::banner($e->getMessage());
                     $success = false;
                 }
-            } else if($sisaBaru != "") {
+            } else if ($sisaBaru != "") {
                 try {
                     $this->validation->validateSisa($sisaBaru);
                 } catch (Exception $e) {
@@ -194,5 +196,47 @@ class GudangView
                 break;
             }
         }
+    }
+
+    function transaksi(): void
+    {
+        $success = true;
+        Input::titleBanner("Transaksi");
+        $idBarang = Input::inputData("Kode Barang");
+        $barang = $this->barangService->findBarang($idBarang);
+        Input::banner("Sekarang");
+        Input::barang($barang);
+        Input::banner("Transaksi");
+        $sisaBarang = $barang->getSisaBarang();
+        $jumlahBarang = Input::inputData("Jumlah Barang");
+        
+        Input::titleBanner("Konfirmasi");
+        Input::banner("Sekarang");
+        Input::barang($barang);
+        Input::banner("Baru");
+        if ($jumlahBarang >= 0) {
+            $barang->setSisaBarang((float) $sisaBarang + $jumlahBarang);
+            Input::barang($barang);
+        } else if($jumlahBarang < 0){
+            $jumlahBarangPositif = $jumlahBarang * -1;
+            if ($sisaBarang < $jumlahBarangPositif) {
+                Input::banner("Sisa barang tidak cukup");
+            } else {
+                $barang->setSisaBarang((float) $sisaBarang - $jumlahBarangPositif);
+                Input::barang($barang);
+            }
+        }
+
+        while ($success) {
+            $pilihan = Input::inputMenu("Jika sesuai ketik 'y', jika ingin batalkan ketik 'x'");
+            if ($pilihan == "x") {
+                Input::banner("Membatalkan update barang");
+                break;
+            } else if ($pilihan == "y") {
+                $this->barangService->transaksi($idBarang, $jumlahBarang);
+                break;
+            }
+        }
+
     }
 }

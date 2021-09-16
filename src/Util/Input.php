@@ -20,6 +20,13 @@ class Input
         return trim($result);
     }
 
+    static function inputDataInt(string $info): int
+    {
+        echo "$info: ";
+        fscanf(STDIN, "%d\n", $result);
+        return $result;
+    }
+
     static function titleBanner(string $s): void
     {
         $result = strtoupper($s);

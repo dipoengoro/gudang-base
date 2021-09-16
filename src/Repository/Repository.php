@@ -4,6 +4,7 @@ namespace Dipoengoro\GudangBase\Repository;
 
 use Dipoengoro\GudangBase\Entity\Barang;
 use PDO;
+use PDOException;
 
 interface BarangRepository
 {
@@ -26,6 +27,12 @@ interface BarangRepository
     function updateSatuan(string $idBarang, string $valueBaru): void;
 
     function updateSisa(string $idBarang, string $valueBaru): void;
+
+    function checkSisaBarang(string $idBarang): float;
+
+    function transactionKeluar(string $idBarang, float $jumlah_barang): void;
+
+    function transactionMasuk(string $idBarang, float $jumlah_barang): void;
 }
 
 class BarangRepositoryImpl implements BarangRepository
@@ -151,5 +158,103 @@ class BarangRepositoryImpl implements BarangRepository
         $sql = "UPDATE barang SET sisa_barang = ? WHERE id_barang = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$valueBaru, $idBarang]);
+    }
+
+    public function checkSisaBarang(string $idBarang): float
+    {
+        try {
+            $sql = 'SELECT sisa_barang FROM barang WHERE id_barang = ?';
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute([$idBarang]);
+            $sisaTersedia = (float) $stmt->fetchColumn();
+            return $sisaTersedia;
+        } catch (PDOException $e) {
+            throw $e->getMessage();
+            return 0;
+        }
+    }
+
+    public function transactionKeluar(
+        string $idBarang,
+        float $jumlah_barang
+    ): void {
+        try {
+            $this->connection->beginTransaction();
+
+            $barang = $this->find($idBarang);
+
+            $sql_update_barang =
+                'UPDATE barang SET sisa_barang = sisa_barang - ? WHERE id_barang = ?';
+            $statement = $this->connection->prepare($sql_update_barang);
+            $statement->execute([$jumlah_barang, $idBarang]);
+            $statement->closeCursor();
+
+            $sql_create_transaction =
+                'INSERT INTO transaksi(
+                    id_barang,
+                    nama_barang, 
+                    transaksi_type,
+                    satuan_barang, 
+                    jumlah_barang)
+                VALUES (?, ?, ?, ?, ?)';
+            $statement = $this->connection->prepare($sql_create_transaction);
+            $statement->execute([
+                $barang->getIdBarang(),
+                $barang->getNamaBarang(),
+                'Keluar',
+                $barang->getSatuanBarang(),
+                $jumlah_barang]);
+            $statement->closeCursor();
+
+            $this->connection->commit();
+        } catch (PDOException $e) {
+            $this->connection->rollBack();
+            die($e->getMessage());
+        }
+    }
+
+    public function transactionMasuk(
+        string $idBarang,
+        float $jumlah_barang
+    ): void {
+
+        try {
+            $this->connection->beginTransaction();
+
+            $barang = $this->find($idBarang);
+
+            $sql_update_barang =
+                'UPDATE barang SET sisa_barang = sisa_barang + ? WHERE id_barang = ?';
+            $statement = $this->connection->prepare($sql_update_barang);
+            $statement->execute([$jumlah_barang, $idBarang]);
+            $statement->closeCursor();
+
+            $sql_create_transaction =
+                'INSERT INTO transaksi(
+                    id_barang,
+                    nama_barang, 
+                    transaksi_type,
+                    satuan_barang, 
+                    jumlah_barang)
+                VALUES (?, ?, ?, ?, ?)';
+            $statement = $this->connection->prepare($sql_create_transaction);
+            $statement->execute([
+                $barang->getIdBarang(),
+                $barang->getNamaBarang(),
+                'Masuk',
+                $barang->getSatuanBarang(),
+                $jumlah_barang]);
+            $statement->closeCursor();
+            
+            $this->connection->commit();
+        } catch (PDOException $e) {
+            $this->connection->rollBack();
+            die($e->getMessage());
+        }
+    }
+
+    public function __destruct()
+    {
+        $this->connection = null;
     }
 }

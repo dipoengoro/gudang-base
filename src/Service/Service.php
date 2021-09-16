@@ -27,6 +27,7 @@ interface BarangService
         string $satuanBaru,
         string $sisaBaru
     ): void;
+    function transaksi(string $idBarang, float $jumlah_barang): void;
 }
 
 class BarangServiceImpl implements BarangService
@@ -110,5 +111,15 @@ class BarangServiceImpl implements BarangService
     function checkBarang(string $idBarang): bool
     {
         return $this->barangRepository->check($idBarang);
+    }
+
+    function transaksi(string $idBarang, float $jumlah_barang): void
+    {
+        if ($jumlah_barang >= 0) {
+            $this->barangRepository->transactionMasuk($idBarang, $jumlah_barang);
+        } else {
+            $jumlah_barang_positif = $jumlah_barang * -1;
+            $this->barangRepository->transactionKeluar($idBarang, $jumlah_barang_positif);
+        }
     }
 }

@@ -43,9 +43,16 @@ function testValidation(string $s) {
     }
 }
 
-
-try {
-    testValidation("coba");
-} catch(Exception $e) {
-    Input::banner($e->getMessage());
+function testMinus(string $s): int {
+    $input = (float) $s;
+    return $input - 2;
 }
+
+echo testMinus(1);
+
+
+// try {
+//     testValidation("coba");
+// } catch(Exception $e) {
+//     Input::banner($e->getMessage());
+// }

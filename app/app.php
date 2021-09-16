@@ -21,4 +21,3 @@ $validation = new Validation();
 $gudangView = new GudangView($barangService, $validation);
 
 $gudangView->showBarang();
-$connection = null;
