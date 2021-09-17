@@ -18,15 +18,11 @@ interface BarangRepository
 
     function find(string $idBarang): Barang;
 
-    function updateId(string $idBarang, string $valueBaru): void;
-
     function updateNama(string $idBarang, string $valueBaru): void;
 
     function updateHarga(string $idBarang, string $valueBaru): void;
 
     function updateSatuan(string $idBarang, string $valueBaru): void;
-
-    function updateSisa(string $idBarang, string $valueBaru): void;
 
     function checkSisaBarang(string $idBarang): float;
 
@@ -37,7 +33,7 @@ interface BarangRepository
 
 class BarangRepositoryImpl implements BarangRepository
 {
-    private PDO $connection;
+    private ?PDO $connection;
 
     public function __construct(PDO $connection)
     {
@@ -46,7 +42,9 @@ class BarangRepositoryImpl implements BarangRepository
 
     public function add(Barang $barang): void
     {
-        $sql = "INSERT INTO 
+        try {
+            $this->connection->beginTransaction();
+            $sql = "INSERT INTO 
                 barang(
                     id_barang,
                     nama_barang, 
@@ -55,15 +53,21 @@ class BarangRepositoryImpl implements BarangRepository
                     sisa_barang
                 ) 
                 VALUES (?, ?, ?, ?, ?)";
-        $statement = $this->connection->prepare($sql);
+            $statement = $this->connection->prepare($sql);
 
-        $statement->execute([
-            $barang->getIdBarang(),
-            $barang->getNamaBarang(),
-            $barang->getHargaSatuan(),
-            $barang->getSatuanBarang(),
-            $barang->getSisaBarang()
-        ]);
+            $statement->execute([
+                $barang->getIdBarang(),
+                $barang->getNamaBarang(),
+                $barang->getHargaSatuan(),
+                $barang->getSatuanBarang(),
+                $barang->getSisaBarang()
+            ]);
+            $statement->closeCursor();
+            $this->connection->commit();
+        } catch (PDOException $e) {
+            $this->connection->rollBack();
+            die($e->getMessage());
+        }
     }
 
     public function remove(string $idBarang): void
@@ -91,7 +95,6 @@ class BarangRepositoryImpl implements BarangRepository
 
             $result[] = $barang;
         }
-
         return $result;
     }
 
@@ -125,13 +128,6 @@ class BarangRepositoryImpl implements BarangRepository
         return $barang;
     }
 
-    public function updateId(string $idBarang, string $valueBaru): void
-    {
-        $sql = "UPDATE barang SET id_barang = ? WHERE id_barang = ?";
-        $statement = $this->connection->prepare($sql);
-        $statement->execute([$valueBaru, $idBarang]);
-    }
-
     public function updateNama(string $idBarang, string $valueBaru): void
     {
         $sql = "UPDATE barang SET nama_barang = ? WHERE id_barang = ?";
@@ -149,13 +145,6 @@ class BarangRepositoryImpl implements BarangRepository
     public function updateSatuan(string $idBarang, string $valueBaru): void
     {
         $sql = "UPDATE barang SET satuan_barang = ? WHERE id_barang = ?";
-        $statement = $this->connection->prepare($sql);
-        $statement->execute([$valueBaru, $idBarang]);
-    }
-
-    public function updateSisa(string $idBarang, string $valueBaru): void
-    {
-        $sql = "UPDATE barang SET sisa_barang = ? WHERE id_barang = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$valueBaru, $idBarang]);
     }
@@ -203,7 +192,8 @@ class BarangRepositoryImpl implements BarangRepository
                 $barang->getNamaBarang(),
                 'Keluar',
                 $barang->getSatuanBarang(),
-                $jumlah_barang]);
+                $jumlah_barang
+            ]);
             $statement->closeCursor();
 
             $this->connection->commit();
@@ -217,7 +207,6 @@ class BarangRepositoryImpl implements BarangRepository
         string $idBarang,
         float $jumlah_barang
     ): void {
-
         try {
             $this->connection->beginTransaction();
 
@@ -243,9 +232,10 @@ class BarangRepositoryImpl implements BarangRepository
                 $barang->getNamaBarang(),
                 'Masuk',
                 $barang->getSatuanBarang(),
-                $jumlah_barang]);
+                $jumlah_barang
+            ]);
             $statement->closeCursor();
-            
+
             $this->connection->commit();
         } catch (PDOException $e) {
             $this->connection->rollBack();

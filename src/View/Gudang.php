@@ -40,7 +40,7 @@ class GudangView
             } elseif ($pilihan == "4") {
                 $this->removeBarang();
             } else if ($pilihan == "x") {
-                break;
+                Input::exit();
             } else {
                 Input::banner("Pilihan tidak dimengerti");
             }
@@ -57,11 +57,9 @@ class GudangView
         $namaBarang = Input::inputData("Nama Barang");
         $hargaSatuan = Input::inputData("Harga (Rupiah)");
         $satuanBarang = Input::inputData("Satuan Barang");
-        $sisaBarang = Input::inputData("Sisa barang");
 
         try {
             $this->validation->validateHarga($hargaSatuan);
-            $this->validation->validateSisa($sisaBarang);
         } catch (Exception $e) {
             Input::banner($e->getMessage());
             $success = false;
@@ -73,7 +71,6 @@ class GudangView
             Input::banner("Nama Barang: $namaBarang");
             Input::banner("Harga (Rupiah): $hargaSatuan");
             Input::banner("Satuan Barang: $satuanBarang");
-            Input::banner("Sisa Barang: $sisaBarang");
         }
 
         while ($success) {
@@ -86,8 +83,7 @@ class GudangView
                     $idBarang,
                     $namaBarang,
                     $hargaSatuan,
-                    $satuanBarang,
-                    $sisaBarang
+                    $satuanBarang
                 );
                 break;
             }
@@ -129,11 +125,9 @@ class GudangView
             Input::banner("Sekarang");
             Input::barang($barang);
             Input::banner("Edit");
-            $idBaru = Input::inputData("Kode Barang");
             $namaBaru = Input::inputData("Nama Barang");
             $hargaBaru = Input::inputData("Harga (Rupiah)");
             $satuanBaru = Input::inputData("Satuan Barang");
-            $sisaBaru = Input::inputData("Sisa barang");
 
             if ($hargaBaru != "") {
                 try {
@@ -142,14 +136,15 @@ class GudangView
                     Input::banner($e->getMessage());
                     $success = false;
                 }
-            } else if ($sisaBaru != "") {
-                try {
-                    $this->validation->validateSisa($sisaBaru);
-                } catch (Exception $e) {
-                    Input::banner($e->getMessage());
-                    $success = false;
-                }
             }
+            //  else if ($sisaBaru != "") {
+            //     try {
+            //         $this->validation->validateSisa($sisaBaru);
+            //     } catch (Exception $e) {
+            //         Input::banner($e->getMessage());
+            //         $success = false;
+            //     }
+            // }
 
             if ($success) {
                 Input::titleBanner("Konfirmasi");
@@ -157,9 +152,6 @@ class GudangView
                 Input::barang($barang);
                 Input::banner("Baru");
 
-                if ($idBaru != "") {
-                    $barang->setIdBarang($idBaru);
-                }
                 if ($namaBaru != "") {
                     $barang->setNamaBarang($namaBaru);
                 }
@@ -168,9 +160,6 @@ class GudangView
                 }
                 if ($satuanBaru != "") {
                     $barang->setSatuanBarang($satuanBaru);
-                }
-                if ($sisaBaru != "") {
-                    $barang->setSisaBarang((float) $sisaBaru);
                 }
                 Input::barang($barang);
             }
@@ -187,11 +176,9 @@ class GudangView
             } else if ($pilihan == "y") {
                 $this->barangService->updateBarang(
                     idBarang: $idBarang,
-                    idBaru: $idBaru,
                     namaBaru: $barang->getNamaBarang(),
                     hargaBaru: $barang->getHargaSatuan(),
-                    satuanBaru: $barang->getSatuanBarang(),
-                    sisaBaru: $barang->getSisaBarang()
+                    satuanBaru: $barang->getSatuanBarang()
                 );
                 break;
             }
@@ -209,7 +196,7 @@ class GudangView
         Input::banner("Transaksi");
         $sisaBarang = $barang->getSisaBarang();
         $jumlahBarang = Input::inputData("Jumlah Barang");
-        
+
         Input::titleBanner("Konfirmasi");
         Input::banner("Sekarang");
         Input::barang($barang);
@@ -217,10 +204,11 @@ class GudangView
         if ($jumlahBarang >= 0) {
             $barang->setSisaBarang((float) $sisaBarang + $jumlahBarang);
             Input::barang($barang);
-        } else if($jumlahBarang < 0){
+        } else if ($jumlahBarang < 0) {
             $jumlahBarangPositif = $jumlahBarang * -1;
             if ($sisaBarang < $jumlahBarangPositif) {
                 Input::banner("Sisa barang tidak cukup");
+                $success = false;
             } else {
                 $barang->setSisaBarang((float) $sisaBarang - $jumlahBarangPositif);
                 Input::barang($barang);
@@ -237,6 +225,5 @@ class GudangView
                 break;
             }
         }
-
     }
 }

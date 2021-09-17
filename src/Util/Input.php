@@ -48,4 +48,9 @@ class Input
                 $b->getSisaBarang()
         );
     }
+
+    static function exit(): void
+    {
+        exit();
+    }
 }

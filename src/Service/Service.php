@@ -13,19 +13,16 @@ interface BarangService
         string $idBarang,
         string $namaBarang,
         int $hargaSatuan,
-        string $satuanBarang,
-        float $sisaBarang
+        string $satuanBarang
     ): void;
     function removeBarang(string $idBarang): void;
     function findBarang(string $idBarang): Barang;
     function checkBarang(string $idBarang): bool;
     function updateBarang(
         string $idBarang,
-        string $idBaru,
         string $namaBaru,
         string $hargaBaru,
-        string $satuanBaru,
-        string $sisaBaru
+        string $satuanBaru
     ): void;
     function transaksi(string $idBarang, float $jumlah_barang): void;
 }
@@ -54,21 +51,18 @@ class BarangServiceImpl implements BarangService
         string $idBarang,
         string $namaBarang,
         int $hargaSatuan,
-        string $satuanBarang,
-        float $sisaBarang
+        string $satuanBarang
     ): void {
         $validateId = (string) $idBarang;
         $validateNama = (string) $namaBarang;
         $validateHarga = (int) $hargaSatuan;
         $validateSatuan = (string) $satuanBarang;
-        $validateSisa = (float) $sisaBarang;
 
         $barang = new Barang(
             $validateId,
             $validateNama,
             $validateHarga,
-            $validateSatuan,
-            $validateSisa
+            $validateSatuan
         );
         $this->barangRepository->add($barang);
 
@@ -89,23 +83,13 @@ class BarangServiceImpl implements BarangService
 
     function updateBarang(
         string $idBarang,
-        string $idBaru,
         string $namaBaru,
         string $hargaBaru,
-        string $satuanBaru,
-        string $sisaBaru
+        string $satuanBaru
     ): void {
-        if ($idBaru != "") {
-            $this->barangRepository->updateId($idBarang, $idBaru);
-            $this->barangRepository->updateNama($idBaru, $namaBaru);
-            $this->barangRepository->updateHarga($idBaru, $hargaBaru);
-            $this->barangRepository->updateSatuan($idBaru, $satuanBaru);
-            $this->barangRepository->updateSisa($idBaru, $sisaBaru);
-        }
         $this->barangRepository->updateNama($idBarang, $namaBaru);
         $this->barangRepository->updateHarga($idBarang, $hargaBaru);
         $this->barangRepository->updateSatuan($idBarang, $satuanBaru);
-        $this->barangRepository->updateSisa($idBarang, $sisaBaru);
     }
 
     function checkBarang(string $idBarang): bool

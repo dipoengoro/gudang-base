@@ -15,7 +15,7 @@ class Barang
         string $namaBarang = "",
         int $hargaSatuan = 1,
         string $satuanBarang = "pcs",
-        float $sisaBarang = 1
+        float $sisaBarang = 0
     ) {
         $this->idBarang = $idBarang;
         $this->namaBarang = $namaBarang;
